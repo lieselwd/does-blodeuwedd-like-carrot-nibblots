@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: 'BBC Reith Serif';
+        src: url("/BBCReithSerif_W_Md.woff") format("woff");
+    }
+
+    @font-face {
+        font-family: 'BBC Reith Sans';
+        src: url("/BBCReithSans_W_Md.woff") format("woff");
+    }
+}
