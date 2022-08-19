@@ -9,9 +9,11 @@ import GroupingSeats from './components/GroupingSeats';
 function Overlay() {
     const [time, setTime] = useState<string>("");
     const [groupings, setGroupings] = useState<Grouping[]>([]);
+    const [ticker, setTicker] = useState<string>("");
+    const endpoint = import.meta.env.VITE_CPENDPOINT;
     
     const fetchGroupings = () => {
-        axios.get<Grouping[]>('http://localhost:8000/api/groupings')
+        axios.get<Grouping[]>(`${endpoint}/api/groupings`)
             .then(res => {
                 setGroupings((prev) => {
                     if (!isEqual(res.data, prev)) {
@@ -19,7 +21,20 @@ function Overlay() {
                     } else {
                         return prev;
                     }
-                })
+                });
+            });
+    }
+
+    const fetchTicker = () => {
+        axios.get<string>(`${endpoint}/api/ticker-lines`)
+            .then(res => {
+                setTicker((prev) => {
+                    if (!isEqual(res.data, prev)) {
+                        return res.data;
+                    } else {
+                        return prev;
+                    }
+                });
             });
     }
 
@@ -45,6 +60,14 @@ function Overlay() {
         return () => clearInterval(groupingsInterval);
     }, []);
 
+    useEffect(() => {
+        const tickerInterval = setInterval(() => {
+            fetchTicker();
+        }, 3000);
+
+        return () => clearInterval(tickerInterval);
+    }, []);
+
     return (
         <div className="absolute bottom-0 w-screen bg-gray-300 h-[143px] text-[30px] select-none">
             <div className="container mx-auto w-[1374px] h-[106px]">
@@ -61,7 +84,7 @@ function Overlay() {
                             </>
                             :
                             <>
-                            <div>NO DATA</div>
+                            <div>Dataless</div>
                             </>
                         }
                     </div>
@@ -70,7 +93,11 @@ function Overlay() {
                     <div className="">
                         <div className="flex flex-row justify-between items-center">
                             <div className="text-gray-700 text-[26px] px-4">
-                                Mayo Porridge delivers 10000th train to rabbits across the world
+                                <TextTransition springConfig={presets.gentle} style={{
+                                        marginTop: '-20px'
+                                    }}>
+                                    {ticker}
+                                </TextTransition>
                             </div>
                             <div className="h-[48px] w-[121px] bg-[#AE0000] text-white flex items-center justify-center">
                                 <div>
