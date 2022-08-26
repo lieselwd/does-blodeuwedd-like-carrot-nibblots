@@ -9,7 +9,7 @@ interface Props {
 
 export default function GroupingSeats({grouping, previous}: Props) {
     return (
-        <div className="flex flex-auto flex-row justify-between items-center font-semibold px-4" style={{
+        <div className="flex flex-row justify-between items-center font-semibold px-4 w-1/6" style={{
             backgroundColor: `${grouping.colour}`,
             color: `${grouping.text_colour}`
         }}>
@@ -22,7 +22,7 @@ export default function GroupingSeats({grouping, previous}: Props) {
                                 <span style={{
                                     marginTop: '-20px'
                                 }}>
-                                    None
+                                    N/A
                                 </span>
                             }
                             {grouping.previous_seats && 

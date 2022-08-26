@@ -8,7 +8,7 @@ import GroupingSeats from './components/GroupingSeats';
 import GroupingVotes from './components/GroupingVotes';
 
 function Overlay() {
-    const barModes = ["total", "previous", "votes"];
+    const barModes = ["total", "votes", "total", "votes", "previous"];
     const [time, setTime] = useState<string>("");
     const [groupings, setGroupings] = useState<Grouping[]>([]);
     const [ticker, setTicker] = useState<string>("");
@@ -83,11 +83,11 @@ function Overlay() {
         <div className="absolute bottom-0 w-screen bg-gray-300 h-[143px] text-[30px] select-none">
             <div className="container mx-auto w-[1374px] h-[106px]">
                 <div className="h-[53px]">
-                    <div className="flex flex-row h-[53px] min-w-full bg-gray-200">
+                    <div className="flex flex-row h-[53px] w-[1374px] bg-gray-200">
                         {barModes[barModeIndex] === "total" && 
                             <>
-                                <div className="flex flex-none items-center px-4 pr-12">
-                                    UK Seats
+                                <div className="flex w-1/6 items-center px-4 pr-12">
+                                    Seats won
                                 </div>
                                 {groupings.length > 0 ?
                                     <>
@@ -104,8 +104,8 @@ function Overlay() {
                         }
                         {barModes[barModeIndex] === "previous" &&
                             <>
-                                <div className="flex flex-none items-center px-4 pr-12">
-                                    Previous Seats
+                                <div className="flex w-1/6 items-center px-4 text-[24px] pr-12">
+                                    Previous seats
                                 </div>
                                 {groupings.length > 0 ?
                                     <>
@@ -122,8 +122,8 @@ function Overlay() {
                         }
                         {barModes[barModeIndex] === "votes" &&
                             <>
-                                <div className="flex flex-none items-center px-4 pr-12">
-                                    Vote Share
+                                <div className="flex w-1/6 items-center px-4 pr-12">
+                                    Vote share
                                 </div>
                                 {groupings.length > 0 ?
                                     <>
