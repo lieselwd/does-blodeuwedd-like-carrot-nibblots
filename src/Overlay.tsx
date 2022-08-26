@@ -8,7 +8,7 @@ import GroupingSeats from './components/GroupingSeats';
 import GroupingVotes from './components/GroupingVotes';
 
 function Overlay() {
-    const barModes = ["total", "votes", "total", "votes", "previous"];
+    const barModes = ["total", "total", "total", "previous"];
     const [showBars, setShowBars] = useState<boolean>(true);
     const [time, setTime] = useState<string>("");
     const [groupings, setGroupings] = useState<Grouping[]>([]);
