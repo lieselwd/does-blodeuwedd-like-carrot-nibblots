@@ -9,6 +9,7 @@ import GroupingVotes from './components/GroupingVotes';
 
 function Overlay() {
     const barModes = ["total", "votes", "total", "votes", "previous"];
+    const [showBars, setShowBars] = useState<boolean>(true);
     const [time, setTime] = useState<string>("");
     const [groupings, setGroupings] = useState<Grouping[]>([]);
     const [ticker, setTicker] = useState<string>("");
@@ -26,6 +27,19 @@ function Overlay() {
                     }
                 });
             });
+    }
+
+    const fetchShowBars = () => {
+        axios.get<boolean>(`${endpoint}/api/show-bars`)
+            .then(res => {
+                setShowBars((prev) => {
+                    if (!isEqual(res.data, prev)) {
+                        return res.data;
+                    } else {
+                        return prev;
+                    }
+                })
+            })
     }
 
     const fetchTicker = () => {
@@ -79,67 +93,77 @@ function Overlay() {
         return () => clearInterval(switchModeInterval);
     }, []);
 
+    useEffect(() => {
+        const showBarsInterval = setInterval(() => {
+            fetchShowBars();
+        }, 1000);
+
+        return () => clearInterval(showBarsInterval);
+    }, []);
+
     return (
         <div className="absolute bottom-0 w-screen bg-gray-300 h-[143px] text-[30px] select-none">
             <div className="container mx-auto w-[1374px] h-[106px]">
-                <div className="h-[53px]">
-                    <div className="flex flex-row h-[53px] w-[1374px] bg-gray-200">
-                        {barModes[barModeIndex] === "total" && 
-                            <>
-                                <div className="flex w-1/6 items-center px-4 pr-12">
-                                    Seats won
-                                </div>
-                                {groupings.length > 0 ?
-                                    <>
-                                        {groupings.map((grouping, i) => {
-                                            return (<GroupingSeats key={i} grouping={grouping} previous={false} />)
-                                        })}
-                                    </>
-                                    :
-                                    <>
-                                    <div>Dataless</div>
-                                    </>
-                                }
-                            </>
-                        }
-                        {barModes[barModeIndex] === "previous" &&
-                            <>
-                                <div className="flex w-1/6 items-center px-4 text-[24px] pr-12">
-                                    Previous seats
-                                </div>
-                                {groupings.length > 0 ?
-                                    <>
-                                        {groupings.map((grouping, i) => {
-                                            return (<GroupingSeats key={i} grouping={grouping} previous={true} />)
-                                        })}
-                                    </>
-                                    :
-                                    <>
-                                    <div>Dataless</div>
-                                    </>
-                                }
-                            </>
-                        }
-                        {barModes[barModeIndex] === "votes" &&
-                            <>
-                                <div className="flex w-1/6 items-center px-4 pr-12">
-                                    Vote share
-                                </div>
-                                {groupings.length > 0 ?
-                                    <>
-                                        {groupings.map((grouping, i) => {
-                                            return (<GroupingVotes key={i} grouping={grouping} />)
-                                        })}
-                                    </>
-                                    :
-                                    <>
+                {showBars &&
+                    <div className="h-[53px]">
+                        <div className="flex flex-row h-[53px] w-[1374px] bg-gray-200">
+                            {barModes[barModeIndex] === "total" && 
+                                <>
+                                    <div className="flex w-1/6 items-center px-4 pr-12">
+                                        Seats won
+                                    </div>
+                                    {groupings.length > 0 ?
+                                        <>
+                                            {groupings.map((grouping, i) => {
+                                                return (<GroupingSeats key={i} grouping={grouping} previous={false} />)
+                                            })}
+                                        </>
+                                        :
+                                        <>
                                         <div>Dataless</div>
-                                    </>
-                                }
-                            </>
-                        }
+                                        </>
+                                    }
+                                </>
+                            }
+                            {barModes[barModeIndex] === "previous" &&
+                                <>
+                                    <div className="flex w-1/6 items-center px-4 text-[24px] pr-12">
+                                        Previous seats
+                                    </div>
+                                    {groupings.length > 0 ?
+                                        <>
+                                            {groupings.map((grouping, i) => {
+                                                return (<GroupingSeats key={i} grouping={grouping} previous={true} />)
+                                            })}
+                                        </>
+                                        :
+                                        <>
+                                        <div>Dataless</div>
+                                        </>
+                                    }
+                                </>
+                            }
+                            {barModes[barModeIndex] === "votes" &&
+                                <>
+                                    <div className="flex w-1/6 items-center px-4 pr-12">
+                                        Vote share
+                                    </div>
+                                    {groupings.length > 0 ?
+                                        <>
+                                            {groupings.map((grouping, i) => {
+                                                return (<GroupingVotes key={i} grouping={grouping} />)
+                                            })}
+                                        </>
+                                        :
+                                        <>
+                                            <div>Dataless</div>
+                                        </>
+                                    }
+                                </>
+                            }
+                        </div>
                     </div>
-                </div>
+                    }
                 <div className="h-[53px]">
                     <div className="">
                         <div className="flex flex-row justify-between items-center">
