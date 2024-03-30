@@ -6,13 +6,12 @@ import { createRef, useCallback, useEffect, useState } from 'react';
 
 function Overlay() {
     const barModes = ["total", "total", "total", "previous"];
-    const [doesShe, setDoesShe] = useState<boolean>(true);
+    const [doesShe, setDoesShe] = useState<string>("true");
     const endpoint = import.meta.env.VITE_CPENDPOINT;
     
     const fetchDoesShe = () => {
-        axios.get<boolean>(`${endpoint}/dblcn.txt`)
+        axios.get<string>(`${endpoint}/dblcn.txt`)
             .then(res => {
-                console.log(res);
                 setDoesShe((prev) => {
                     if (!isEqual(res.data, prev)) {
                         return res.data;
@@ -26,24 +25,15 @@ function Overlay() {
     useEffect(() => {
         const doeSheInterval = setInterval(() => {
             fetchDoesShe();
-        }, 2000);
+        }, 100000);
 
         return () => clearInterval(doeSheInterval);
     }, []);
 
     return (
-        <div className="absolute bottom-0 w-screen bg-gray-300 h-[143px] text-[30px] select-none">
-            <div className="container mx-auto w-[1374px] h-[106px]">
-                {doesShe ??
-                    <div>
-                        <p>Blodeuwedd does like carrot nibblots.</p>
-                    </div>
-                }
-                {!doesShe ?? 
-                    <div>
-                        <p>Blodeuwedd does not like carrot nibblots.</p>
-                    </div>
-                }
+        <div className="flex h-screen justify-center items-center">
+            <div className="text-center">
+                <h1 className="text-lg">Blodeuwedd {doesShe == "true" ? 'does' : 'does not'} like carrot nibblots.</h1>
             </div>
         </div>
     )
