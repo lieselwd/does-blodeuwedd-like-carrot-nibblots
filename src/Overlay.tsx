@@ -3,49 +3,17 @@ import { isEqual } from 'lodash';
 import TextTransition, { presets } from "react-text-transition";
 import './app.css';
 import { createRef, useCallback, useEffect, useState } from 'react';
-import { createGrouping, Grouping } from './types/Grouping';
-import GroupingSeats from './components/GroupingSeats';
-import GroupingVotes from './components/GroupingVotes';
 
 function Overlay() {
     const barModes = ["total", "total", "total", "previous"];
-    const [showBars, setShowBars] = useState<boolean>(true);
-    const [time, setTime] = useState<string>("");
-    const [groupings, setGroupings] = useState<Grouping[]>([]);
-    const [ticker, setTicker] = useState<string>("");
-    const [barModeIndex, setBarModeIndex] = useState<number>(0);
+    const [doesShe, setDoesShe] = useState<boolean>(true);
     const endpoint = import.meta.env.VITE_CPENDPOINT;
     
-    const fetchGroupings = () => {
-        axios.get<Grouping[]>(`${endpoint}/api/groupings`)
+    const fetchDoesShe = () => {
+        axios.get<boolean>(`${endpoint}/dblcn.txt`)
             .then(res => {
-                setGroupings((prev) => {
-                    if (!isEqual(res.data, prev)) {
-                        return res.data;
-                    } else {
-                        return prev;
-                    }
-                });
-            });
-    }
-
-    const fetchShowBars = () => {
-        axios.get<boolean>(`${endpoint}/api/show-bars`)
-            .then(res => {
-                setShowBars((prev) => {
-                    if (!isEqual(res.data, prev)) {
-                        return res.data;
-                    } else {
-                        return prev;
-                    }
-                })
-            })
-    }
-
-    const fetchTicker = () => {
-        axios.get<string>(`${endpoint}/api/ticker-lines`)
-            .then(res => {
-                setTicker((prev) => {
+                console.log(res);
+                setDoesShe((prev) => {
                     if (!isEqual(res.data, prev)) {
                         return res.data;
                     } else {
@@ -56,132 +24,26 @@ function Overlay() {
     }
 
     useEffect(() => {
-        const timeInterval = setInterval(() => {
-            const date: Date = new Date();
-            const formatted: string = date.toLocaleString("en-gb", {
-                hour: "2-digit",
-                minute: "2-digit"
-
-            });
-            setTime(formatted);
+        const doeSheInterval = setInterval(() => {
+            fetchDoesShe();
         }, 2000);
 
-        return () => clearInterval(timeInterval);
-    }, []);
-
-    useEffect(() => {
-        const groupingsInterval = setInterval(() => {
-            fetchGroupings();
-        }, 2000);
-
-        return () => clearInterval(groupingsInterval);
-    }, []);
-
-    useEffect(() => {
-        const tickerInterval = setInterval(() => {
-            fetchTicker();
-        }, 3000);
-
-        return () => clearInterval(tickerInterval);
-    }, []);
-
-    useEffect(() => {
-        const switchModeInterval = setInterval(() => {
-            setBarModeIndex(prev => ((prev + 1) % barModes.length));
-        }, 10000);
-
-        return () => clearInterval(switchModeInterval);
-    }, []);
-
-    useEffect(() => {
-        const showBarsInterval = setInterval(() => {
-            fetchShowBars();
-        }, 1000);
-
-        return () => clearInterval(showBarsInterval);
+        return () => clearInterval(doeSheInterval);
     }, []);
 
     return (
         <div className="absolute bottom-0 w-screen bg-gray-300 h-[143px] text-[30px] select-none">
             <div className="container mx-auto w-[1374px] h-[106px]">
-                {showBars &&
-                    <div className="h-[53px]">
-                        <div className="flex flex-row h-[53px] w-[1374px] bg-gray-200">
-                            {barModes[barModeIndex] === "total" && 
-                                <>
-                                    <div className="flex w-1/6 items-center px-4 pr-12">
-                                        Seats won
-                                    </div>
-                                    {groupings.length > 0 ?
-                                        <>
-                                            {groupings.map((grouping, i) => {
-                                                return (<GroupingSeats key={i} grouping={grouping} previous={false} />)
-                                            })}
-                                        </>
-                                        :
-                                        <>
-                                        <div>Dataless</div>
-                                        </>
-                                    }
-                                </>
-                            }
-                            {barModes[barModeIndex] === "previous" &&
-                                <>
-                                    <div className="flex w-1/6 items-center px-4 text-[24px] pr-12">
-                                        Previous seats
-                                    </div>
-                                    {groupings.length > 0 ?
-                                        <>
-                                            {groupings.map((grouping, i) => {
-                                                return (<GroupingSeats key={i} grouping={grouping} previous={true} />)
-                                            })}
-                                        </>
-                                        :
-                                        <>
-                                        <div>Dataless</div>
-                                        </>
-                                    }
-                                </>
-                            }
-                            {barModes[barModeIndex] === "votes" &&
-                                <>
-                                    <div className="flex w-1/6 items-center px-4 pr-12">
-                                        Vote share
-                                    </div>
-                                    {groupings.length > 0 ?
-                                        <>
-                                            {groupings.map((grouping, i) => {
-                                                return (<GroupingVotes key={i} grouping={grouping} />)
-                                            })}
-                                        </>
-                                        :
-                                        <>
-                                            <div>Dataless</div>
-                                        </>
-                                    }
-                                </>
-                            }
-                        </div>
+                {doesShe ??
+                    <div>
+                        <p>Blodeuwedd does like carrot nibblots.</p>
                     </div>
-                    }
-                <div className="h-[53px]">
-                    <div className="">
-                        <div className="flex flex-row justify-between items-center">
-                            <div className="text-gray-700 text-[26px] px-4">
-                                <TextTransition springConfig={presets.gentle} style={{
-                                        marginTop: '-20px'
-                                    }}>
-                                    {ticker}
-                                </TextTransition>
-                            </div>
-                            <div className="h-[48px] w-[121px] bg-[#AE0000] text-white flex items-center justify-center">
-                                <div>
-                                    <span>{time}</span>
-                                </div>
-                            </div>
-                        </div>
+                }
+                {!doesShe ?? 
+                    <div>
+                        <p>Blodeuwedd does not like carrot nibblots.</p>
                     </div>
-                </div>
+                }
             </div>
         </div>
     )
